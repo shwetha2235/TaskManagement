@@ -1,0 +1,123 @@
+<template>
+
+  <div class="task-card">
+
+    <div class="task-info">
+
+      <div class="task-title-row">
+
+        <h3>{{ task.title }}</h3>
+
+        <span
+          class="priority"
+          :class="(task.priority || 'Medium').toLowerCase()"
+        >
+          {{ task.priority || "Medium" }}
+        </span>
+
+      </div>
+
+
+      <p class="description">
+        {{ task.description }}
+      </p>
+
+
+      <div class="task-details">
+
+        <p>
+          <strong>Assigned to:</strong>
+          {{ task.assignedTo }}
+        </p>
+
+        <p>
+          <strong>Due:</strong>
+          {{ task.dueDate }}
+        </p>
+
+      </div>
+
+
+      <div class="status-section">
+
+        <strong>Status:</strong>
+
+        <select
+          :value="task.status"
+          @change="changeStatus"
+          class="status-select"
+        >
+
+          <option value="To Do">
+            To Do
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="task-actions">
+
+      <button
+        class="edit-btn"
+        @click="$emit('edit', task)"
+      >
+        Edit
+      </button>
+
+
+      <button
+        class="delete-btn"
+        @click="$emit('delete', task.id)"
+      >
+        Delete
+      </button>
+
+    </div>
+
+  </div>
+
+</template>
+
+
+<script setup>
+
+const props = defineProps({
+
+  task: {
+    type: Object,
+    required: true
+  }
+
+});
+
+
+const emit = defineEmits([
+  "edit",
+  "delete",
+  "status-change"
+]);
+
+
+function changeStatus(event) {
+
+  emit(
+    "status-change",
+    props.task,
+    event.target.value
+  );
+
+}
+
+</script>
