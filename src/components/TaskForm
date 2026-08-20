@@ -1,0 +1,161 @@
+<template>
+
+  <div class="task-form">
+
+    <h2>Add New Task</h2>
+
+    <form @submit.prevent="submitTask">
+
+      <label>Task Title</label>
+
+      <input
+        v-model="title"
+        type="text"
+        placeholder="Enter task title"
+        required
+      />
+
+
+      <label>Description</label>
+
+      <textarea
+        v-model="description"
+        placeholder="Enter task description"
+      ></textarea>
+
+
+      <label>Assigned To</label>
+
+      <input
+        v-model="assignedTo"
+        type="text"
+        placeholder="Enter person's name"
+        required
+      />
+
+
+      <label>Due Date</label>
+
+      <input
+        v-model="dueDate"
+        type="date"
+        required
+      />
+
+
+      <label>Priority</label>
+
+      <select v-model="priority">
+
+        <option value="Low">Low</option>
+
+        <option value="Medium">Medium</option>
+
+        <option value="High">High</option>
+
+      </select>
+
+
+      <label>Status</label>
+
+      <select v-model="status">
+
+        <option value="To Do">To Do</option>
+
+        <option value="In Progress">
+          In Progress
+        </option>
+
+        <option value="Completed">
+          Completed
+        </option>
+
+      </select>
+
+
+      <div class="buttons">
+
+        <button
+          type="submit"
+          class="add-task-button"
+        >
+          Add Task
+        </button>
+
+
+        <button
+          type="button"
+          class="cancel-button"
+          @click="$emit('cancel')"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</template>
+
+
+<script setup>
+
+import { ref } from "vue";
+
+
+const emit = defineEmits([
+  "add-task",
+  "cancel"
+]);
+
+
+const title = ref("");
+
+const description = ref("");
+
+const assignedTo = ref("");
+
+const dueDate = ref("");
+
+const priority = ref("Medium");
+
+const status = ref("To Do");
+
+
+function submitTask() {
+
+  emit("add-task", {
+
+    title: title.value,
+
+    description: description.value,
+
+    assignedTo: assignedTo.value,
+
+    dueDate: dueDate.value,
+
+    priority: priority.value,
+
+    status: status.value
+
+  });
+
+
+  /* Reset form */
+
+  title.value = "";
+
+  description.value = "";
+
+  assignedTo.value = "";
+
+  dueDate.value = "";
+
+  priority.value = "Medium";
+
+  status.value = "To Do";
+}
+
+</script>
