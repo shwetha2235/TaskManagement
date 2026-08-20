@@ -1,0 +1,199 @@
+<template>
+
+  <div class="section-header">
+
+    <div>
+
+      <h2>My Tasks</h2>
+
+      <p>Manage and track your tasks</p>
+
+    </div>
+
+
+    <button
+      class="add-btn"
+      @click="$emit('add-task')"
+    >
+      + Add Task
+    </button>
+
+  </div>
+
+
+  <!-- Search and Filters -->
+
+  <div class="task-controls">
+
+    <input
+      :value="searchQuery"
+      @input="$emit('update:searchQuery', $event.target.value)"
+      type="text"
+      placeholder="Search tasks..."
+      class="search-input"
+    />
+
+
+    <select
+      :value="statusFilter"
+      @change="$emit('update:statusFilter', $event.target.value)"
+      class="filter-select"
+    >
+
+      <option value="All">All Status</option>
+
+      <option value="To Do">To Do</option>
+
+      <option value="In Progress">In Progress</option>
+
+      <option value="Completed">Completed</option>
+
+    </select>
+
+
+    <select
+      :value="priorityFilter"
+      @change="$emit('update:priorityFilter', $event.target.value)"
+      class="filter-select"
+    >
+
+      <option value="All">All Priority</option>
+
+      <option value="Low">Low</option>
+
+      <option value="Medium">Medium</option>
+
+      <option value="High">High</option>
+
+    </select>
+
+
+    <select
+      :value="sortOption"
+      @change="$emit('update:sortOption', $event.target.value)"
+      class="filter-select"
+    >
+
+      <option value="newest">Newest First</option>
+
+      <option value="oldest">Oldest First</option>
+
+      <option value="dueSoon">
+        Due Date - Nearest
+      </option>
+
+      <option value="dueLatest">
+        Due Date - Latest
+      </option>
+
+      <option value="priority">
+        Priority - High to Low
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <!-- Empty State -->
+
+  <div
+    v-if="filteredTasks.length === 0"
+    class="empty"
+  >
+
+    <h3>No tasks found</h3>
+
+    <p>
+      Try changing your search or filter,
+      or click "Add Task" to create your first task.
+    </p>
+
+  </div>
+
+
+  <!-- Task Cards -->
+
+  <div class="task-list">
+
+    <TaskCard
+      v-for="task in filteredTasks"
+      :key="task.id"
+      :task="task"
+      @edit="$emit('edit', $event)"
+      @delete="$emit('delete', $event)"
+      @status-change="forwardStatusChange"
+    />
+
+  </div>
+
+</template>
+
+
+<script setup>
+
+import TaskCard from "./TaskCard.vue";
+
+
+defineProps({
+
+  filteredTasks: {
+    type: Array,
+    default: () => []
+  },
+
+  searchQuery: {
+    type: String,
+    default: ""
+  },
+
+  statusFilter: {
+    type: String,
+    default: "All"
+  },
+
+  priorityFilter: {
+    type: String,
+    default: "All"
+  },
+
+  sortOption: {
+    type: String,
+    default: "newest"
+  }
+
+});
+
+
+const emit = defineEmits([
+
+  "update:searchQuery",
+
+  "update:statusFilter",
+
+  "update:priorityFilter",
+
+  "update:sortOption",
+
+  "add-task",
+
+  "edit",
+
+  "delete",
+
+  "status-change"
+
+]);
+
+
+function forwardStatusChange(task, status) {
+
+  emit(
+    "status-change",
+    task,
+    status
+  );
+
+}
+
+</script>
