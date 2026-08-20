@@ -1,0 +1,65 @@
+<template>
+
+  <div class="stat-card">
+
+    <h3>Total Tasks</h3>
+
+    <p>{{ tasks.length }}</p>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <h3>To Do</h3>
+
+    <p>{{ todoTasks }}</p>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <h3>In Progress</h3>
+
+    <p>{{ progressTasks }}</p>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <h3>Completed</h3>
+
+    <p>{{ completedTasks }}</p>
+
+  </div>
+
+</template>
+
+
+<script setup>
+
+defineProps({
+  tasks: {
+    type: Array,
+    default: () => []
+  },
+
+  todoTasks: {
+    type: Number,
+    default: 0
+  },
+
+  progressTasks: {
+    type: Number,
+    default: 0
+  },
+
+  completedTasks: {
+    type: Number,
+    default: 0
+  }
+});
+
+</script>
