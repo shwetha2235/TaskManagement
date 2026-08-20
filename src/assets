@@ -1,0 +1,607 @@
+/* =========================
+   GLOBAL
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+  color: #1f2937;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+  background: #2563eb;
+  color: white;
+  padding: 30px 40px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+}
+
+.header p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+
+/* =========================
+   STATISTICS
+========================= */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 25px 40px;
+}
+
+.stat-card {
+  background: white;
+  padding: 22px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+.task-section,
+.kanban-section,
+.calendar-section,
+.notification-section {
+  margin: 25px 40px;
+}
+
+.section-header,
+.kanban-header,
+.calendar-header,
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h2,
+.kanban-header h2,
+.calendar-header h2,
+.notification-header h2 {
+  margin: 0 0 5px;
+}
+
+.section-header p,
+.kanban-header p,
+.calendar-header p,
+.notification-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+
+/* =========================
+   ADD BUTTON
+========================= */
+
+.add-btn {
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.add-btn:hover {
+  background: #1d4ed8;
+}
+
+
+/* =========================
+   TASK CONTROLS
+========================= */
+
+.task-controls {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.search-input,
+.filter-select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+}
+
+
+/* =========================
+   TASK LIST
+========================= */
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+
+/* =========================
+   TASK CARD
+========================= */
+
+.task-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.task-title-row h3 {
+  margin: 0;
+}
+
+.description {
+  color: #6b7280;
+}
+
+.task-details p {
+  margin: 6px 0;
+}
+
+.status-section {
+  margin-top: 12px;
+}
+
+.status-select {
+  margin-left: 8px;
+  padding: 7px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+
+/* =========================
+   PRIORITY
+========================= */
+
+.priority {
+  padding: 4px 9px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.priority.low {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.priority.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.priority.high {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+
+/* =========================
+   TASK ACTIONS
+========================= */
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 8px 13px;
+  border-radius: 6px;
+}
+
+.edit-btn {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+
+/* =========================
+   TASK FORM
+========================= */
+
+.task-form,
+.edit-form {
+  background: white;
+  padding: 25px;
+  margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.task-form h2,
+.edit-form h2 {
+  margin-top: 0;
+}
+
+.task-form label,
+.edit-form label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.task-form input,
+.task-form textarea,
+.task-form select,
+.edit-form input,
+.edit-form textarea,
+.edit-form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+}
+
+.task-form textarea,
+.edit-form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+
+/* =========================
+   FORM BUTTONS
+========================= */
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.add-task-button,
+.save-btn,
+.cancel-button,
+.cancel-btn {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 7px;
+}
+
+.add-task-button,
+.save-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.cancel-button,
+.cancel-btn {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+
+/* =========================
+   KANBAN
+========================= */
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.kanban-column {
+  background: #e9edf5;
+  padding: 15px;
+  border-radius: 12px;
+  min-height: 250px;
+}
+
+.kanban-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.kanban-column-header h3 {
+  margin: 0;
+}
+
+.kanban-column-header span {
+  background: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+}
+
+.kanban-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.kanban-card h4 {
+  margin-top: 0;
+}
+
+.kanban-card p {
+  color: #6b7280;
+}
+
+.kanban-card small {
+  display: block;
+  margin: 6px 0;
+}
+
+.kanban-status {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+
+/* =========================
+   CALENDAR
+========================= */
+
+.calendar {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+}
+
+.calendar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-top h2 {
+  margin: 0;
+}
+
+.calendar-btn {
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 7px;
+  font-size: 18px;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-weekdays div {
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.calendar-day {
+  min-height: 120px;
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+}
+
+.calendar-day.other-month {
+  background: #f9fafb;
+  color: #9ca3af;
+}
+
+.calendar-day.today {
+  border: 2px solid #2563eb;
+}
+
+.day-number {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.calendar-task {
+  background: #eff6ff;
+  padding: 6px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.calendar-task strong,
+.calendar-task small {
+  display: block;
+}
+
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+.notification-count {
+  background: #2563eb;
+  color: white;
+  padding: 7px 12px;
+  border-radius: 20px;
+}
+
+.notification-card {
+  background: white;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border-left: 5px solid #2563eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.notification-card h3 {
+  margin: 0 0 5px;
+}
+
+.notification-card p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.notification-card.danger {
+  border-left-color: #dc2626;
+}
+
+.notification-card.warning {
+  border-left-color: #f59e0b;
+}
+
+.notification-card.info {
+  border-left-color: #2563eb;
+}
+
+.no-notifications {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty {
+  background: white;
+  padding: 30px;
+  text-align: center;
+  border-radius: 12px;
+  color: #6b7280;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .task-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .header {
+    padding: 25px 20px;
+  }
+
+  .stats,
+  .task-section,
+  .kanban-section,
+  .calendar-section,
+  .notification-section {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .task-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .task-card {
+    flex-direction: column;
+  }
+
+  .calendar {
+    overflow-x: auto;
+  }
+
+  .calendar-grid,
+  .calendar-weekdays {
+    min-width: 700px;
+  }
+
+}
