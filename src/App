@@ -1,0 +1,1150 @@
+<template>
+
+  <!-- Header -->
+  <header class="header">
+    <h1>Task Management System</h1>
+    <p>Manage your tasks easily</p>
+  </header>
+
+
+  <!-- Statistics -->
+  <div class="stats">
+
+    <Statistics
+      :tasks="tasks"
+      :todo-tasks="todoTasks.length"
+      :progress-tasks="progressTasks.length"
+      :completed-tasks="completedTasks.length"
+    />
+
+  </div>
+
+
+  <!-- Task Management -->
+  <section class="task-section">
+
+    <TaskList
+      :filtered-tasks="filteredTasks"
+      :search-query="searchQuery"
+      :status-filter="statusFilter"
+      :priority-filter="priorityFilter"
+      :sort-option="sortOption"
+
+      @update:searchQuery="searchQuery = $event"
+      @update:statusFilter="statusFilter = $event"
+      @update:priorityFilter="priorityFilter = $event"
+      @update:sortOption="sortOption = $event"
+
+      @add-task="openAddForm"
+      @edit="editTask"
+      @delete="deleteTask"
+      @status-change="changeStatus"
+    />
+
+
+    <!-- Add Task -->
+    <TaskForm
+      v-if="showForm"
+      @add-task="addTask"
+      @cancel="showForm = false"
+    />
+
+
+    <!-- Edit Task -->
+    <div
+      v-if="editingTask"
+      class="edit-form"
+    >
+
+      <h2>Edit Task</h2>
+
+      <form @submit.prevent="saveEditedTask">
+
+        <label>Task Title</label>
+
+        <input
+          v-model="editForm.title"
+          type="text"
+          required
+        />
+
+
+        <label>Description</label>
+
+        <textarea
+          v-model="editForm.description"
+        ></textarea>
+
+
+        <label>Assigned To</label>
+
+        <input
+          v-model="editForm.assignedTo"
+          type="text"
+          required
+        />
+
+
+        <label>Due Date</label>
+
+        <input
+          v-model="editForm.dueDate"
+          type="date"
+          required
+        />
+
+
+        <label>Priority</label>
+
+        <select v-model="editForm.priority">
+
+          <option value="Low">
+            Low
+          </option>
+
+          <option value="Medium">
+            Medium
+          </option>
+
+          <option value="High">
+            High
+          </option>
+
+        </select>
+
+
+        <label>Status</label>
+
+        <select v-model="editForm.status">
+
+          <option value="To Do">
+            To Do
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+        </select>
+
+
+        <div class="buttons">
+
+          <button
+            type="submit"
+            class="save-btn"
+          >
+            Save Changes
+          </button>
+
+
+          <button
+            type="button"
+            class="cancel-btn"
+            @click="cancelEdit"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </section>
+
+
+  <!-- Kanban -->
+  <section class="kanban-section">
+
+    <h2>Kanban Board</h2>
+
+    <KanbanBoard
+      :tasks="tasks"
+      @status-change="changeStatus"
+    />
+
+  </section>
+
+
+  <!-- Calendar -->
+  <section class="calendar-section">
+
+    <Calendar
+      :tasks="tasks"
+    />
+
+  </section>
+
+
+  <!-- Notifications -->
+  <section class="notification-section">
+
+    <Notifications
+      :notifications="notifications"
+    />
+
+  </section>
+
+</template>
+
+
+<script setup>
+
+import {
+  ref,
+  computed,
+  onMounted
+} from "vue";
+
+
+import Statistics
+  from "./components/Statistics.vue";
+
+import TaskList
+  from "./components/TaskList.vue";
+
+import TaskForm
+  from "./components/TaskForm.vue";
+
+import KanbanBoard
+  from "./components/KanbanBoard.vue";
+
+import Calendar
+  from "./components/Calendar.vue";
+
+import Notifications
+  from "./components/Notifications.vue";
+
+
+
+/* ========================================
+   BACKEND API
+======================================== */
+
+const API_URL =
+  "http://localhost/task_API";
+
+
+
+/* ========================================
+   TASK DATA
+======================================== */
+
+const tasks = ref([]);
+
+
+/* Loading state */
+
+const loading = ref(false);
+
+
+
+/* ========================================
+   LOAD TASKS FROM MYSQL
+======================================== */
+
+async function loadTasks() {
+
+  loading.value = true;
+
+  try {
+
+    const response = await fetch(
+      `${API_URL}/get_tasks.php`
+    );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Failed to load tasks"
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    tasks.value = data;
+
+
+  } catch (error) {
+
+    console.error(
+      "Error loading tasks:",
+      error
+    );
+
+
+    alert(
+      "Unable to load tasks from the server."
+    );
+
+
+  } finally {
+
+    loading.value = false;
+
+  }
+
+}
+
+
+
+/* Load tasks when application starts */
+
+onMounted(() => {
+
+  loadTasks();
+
+});
+
+
+
+/* ========================================
+   FILTER VARIABLES
+======================================== */
+
+const searchQuery = ref("");
+
+const statusFilter = ref("All");
+
+const priorityFilter = ref("All");
+
+const sortOption = ref("newest");
+
+
+
+/* ========================================
+   FORM VARIABLES
+======================================== */
+
+const showForm = ref(false);
+
+const editingTask = ref(null);
+
+
+const editForm = ref({
+
+  title: "",
+
+  description: "",
+
+  assignedTo: "",
+
+  dueDate: "",
+
+  priority: "Medium",
+
+  status: "To Do"
+
+});
+
+
+
+/* ========================================
+   STATISTICS
+======================================== */
+
+const todoTasks = computed(() => {
+
+  return tasks.value.filter(
+    task =>
+      task.status === "To Do"
+  );
+
+});
+
+
+const progressTasks = computed(() => {
+
+  return tasks.value.filter(
+    task =>
+      task.status === "In Progress"
+  );
+
+});
+
+
+const completedTasks = computed(() => {
+
+  return tasks.value.filter(
+    task =>
+      task.status === "Completed"
+  );
+
+});
+
+
+
+/* ========================================
+   FILTER + SORT
+======================================== */
+
+const filteredTasks = computed(() => {
+
+  let result = [
+    ...tasks.value
+  ];
+
+
+  /* -------------------------
+     SEARCH
+  ------------------------- */
+
+  if (
+    searchQuery.value.trim()
+  ) {
+
+    const search =
+      searchQuery.value
+        .toLowerCase();
+
+
+    result =
+      result.filter(task =>
+
+        (task.title || "")
+          .toLowerCase()
+          .includes(search)
+
+        ||
+
+        (task.description || "")
+          .toLowerCase()
+          .includes(search)
+
+        ||
+
+        (task.assignedTo || "")
+          .toLowerCase()
+          .includes(search)
+
+      );
+
+  }
+
+
+
+  /* -------------------------
+     STATUS FILTER
+  ------------------------- */
+
+  if (
+    statusFilter.value !== "All"
+  ) {
+
+    result =
+      result.filter(
+        task =>
+          task.status ===
+          statusFilter.value
+      );
+
+  }
+
+
+
+  /* -------------------------
+     PRIORITY FILTER
+  ------------------------- */
+
+  if (
+    priorityFilter.value !== "All"
+  ) {
+
+    result =
+      result.filter(
+        task =>
+          task.priority ===
+          priorityFilter.value
+      );
+
+  }
+
+
+
+  /* -------------------------
+     SORT
+  ------------------------- */
+
+  if (
+    sortOption.value === "newest"
+  ) {
+
+    result.sort(
+      (a, b) => {
+
+        return (
+          new Date(b.createdAt) -
+          new Date(a.createdAt)
+        );
+
+      }
+    );
+
+  }
+
+
+  else if (
+    sortOption.value === "oldest"
+  ) {
+
+    result.sort(
+      (a, b) => {
+
+        return (
+          new Date(a.createdAt) -
+          new Date(b.createdAt)
+        );
+
+      }
+    );
+
+  }
+
+
+  else if (
+    sortOption.value === "dueSoon"
+  ) {
+
+    result.sort(
+      (a, b) => {
+
+        return (
+          new Date(a.dueDate) -
+          new Date(b.dueDate)
+        );
+
+      }
+    );
+
+  }
+
+
+  else if (
+    sortOption.value === "dueLatest"
+  ) {
+
+    result.sort(
+      (a, b) => {
+
+        return (
+          new Date(b.dueDate) -
+          new Date(a.dueDate)
+        );
+
+      }
+    );
+
+  }
+
+
+  else if (
+    sortOption.value === "priority"
+  ) {
+
+    const priorityValue = {
+
+      High: 3,
+
+      Medium: 2,
+
+      Low: 1
+
+    };
+
+
+    result.sort(
+      (a, b) => {
+
+        return (
+          priorityValue[b.priority] -
+          priorityValue[a.priority]
+        );
+
+      }
+    );
+
+  }
+
+
+  return result;
+
+});
+
+
+
+/* ========================================
+   OPEN ADD FORM
+======================================== */
+
+function openAddForm() {
+
+  showForm.value = true;
+
+}
+
+
+
+/* ========================================
+   ADD TASK
+======================================== */
+
+async function addTask(newTask) {
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/add_task.php`,
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify(newTask)
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.message ||
+        "Failed to add task"
+      );
+
+    }
+
+
+    /* Close form */
+
+    showForm.value = false;
+
+
+    /* Reload tasks from MySQL */
+
+    await loadTasks();
+
+
+  } catch (error) {
+
+    console.error(
+      "Add task error:",
+      error
+    );
+
+
+    alert(
+      "Unable to add task."
+    );
+
+  }
+
+}
+
+
+
+/* ========================================
+   DELETE TASK
+======================================== */
+
+async function deleteTask(taskId) {
+
+  const confirmed =
+    confirm(
+      "Are you sure you want to delete this task?"
+    );
+
+
+  if (!confirmed) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/delete_task.php`,
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              id: taskId
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.message ||
+        "Failed to delete task"
+      );
+
+    }
+
+
+    await loadTasks();
+
+
+  } catch (error) {
+
+    console.error(
+      "Delete task error:",
+      error
+    );
+
+
+    alert(
+      "Unable to delete task."
+    );
+
+  }
+
+}
+
+
+
+/* ========================================
+   EDIT TASK
+======================================== */
+
+function editTask(task) {
+
+  editingTask.value =
+    task;
+
+
+  editForm.value = {
+
+    title:
+      task.title,
+
+    description:
+      task.description || "",
+
+    assignedTo:
+      task.assignedTo,
+
+    dueDate:
+      task.dueDate,
+
+    priority:
+      task.priority || "Medium",
+
+    status:
+      task.status || "To Do"
+
+  };
+
+}
+
+
+
+/* ========================================
+   SAVE EDITED TASK
+======================================== */
+
+async function saveEditedTask() {
+
+  if (
+    !editingTask.value
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const updatedTask = {
+
+      id:
+        editingTask.value.id,
+
+      title:
+        editForm.value.title,
+
+      description:
+        editForm.value.description,
+
+      assignedTo:
+        editForm.value.assignedTo,
+
+      dueDate:
+        editForm.value.dueDate,
+
+      priority:
+        editForm.value.priority,
+
+      status:
+        editForm.value.status
+
+    };
+
+
+    const response =
+      await fetch(
+        `${API_URL}/update_task.php`,
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify(
+              updatedTask
+            )
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.message ||
+        "Failed to update task"
+      );
+
+    }
+
+
+    cancelEdit();
+
+
+    await loadTasks();
+
+
+  } catch (error) {
+
+    console.error(
+      "Update task error:",
+      error
+    );
+
+
+    alert(
+      "Unable to update task."
+    );
+
+  }
+
+}
+
+
+
+/* ========================================
+   CANCEL EDIT
+======================================== */
+
+function cancelEdit() {
+
+  editingTask.value =
+    null;
+
+
+  editForm.value = {
+
+    title: "",
+
+    description: "",
+
+    assignedTo: "",
+
+    dueDate: "",
+
+    priority: "Medium",
+
+    status: "To Do"
+
+  };
+
+}
+
+
+
+/* ========================================
+   CHANGE STATUS
+======================================== */
+
+async function changeStatus(
+  task,
+  newStatus
+) {
+
+  if (
+    !task ||
+    !newStatus
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/update_status.php`,
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              id:
+                task.id,
+
+              status:
+                newStatus
+
+            })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.message ||
+        "Failed to change status"
+      );
+
+    }
+
+
+    await loadTasks();
+
+
+  } catch (error) {
+
+    console.error(
+      "Status update error:",
+      error
+    );
+
+
+    alert(
+      "Unable to update task status."
+    );
+
+  }
+
+}
+
+
+
+/* ========================================
+   NOTIFICATIONS
+======================================== */
+
+const notifications = computed(() => {
+
+  const today =
+    new Date();
+
+
+  today.setHours(
+    0,
+    0,
+    0,
+    0
+  );
+
+
+  return tasks.value
+
+    .filter(
+      task =>
+        task.status !==
+        "Completed"
+    )
+
+    .map(task => {
+
+      const dueDate =
+        new Date(
+          task.dueDate
+        );
+
+
+      dueDate.setHours(
+        0,
+        0,
+        0,
+        0
+      );
+
+
+      const difference =
+        Math.ceil(
+
+          (
+            dueDate -
+            today
+          )
+          /
+          (
+            1000 *
+            60 *
+            60 *
+            24
+          )
+
+        );
+
+
+      /* Overdue */
+
+      if (
+        difference < 0
+      ) {
+
+        return {
+
+          id:
+            `overdue-${task.id}`,
+
+          type:
+            "danger",
+
+          title:
+            "Overdue Task",
+
+          message:
+            `"${task.title}" is overdue.`
+
+        };
+
+      }
+
+
+
+      /* Due today */
+
+      if (
+        difference === 0
+      ) {
+
+        return {
+
+          id:
+            `today-${task.id}`,
+
+          type:
+            "warning",
+
+          title:
+            "Due Today",
+
+          message:
+            `"${task.title}" is due today.`
+
+        };
+
+      }
+
+
+
+      /* Due soon */
+
+      if (
+        difference <= 2
+      ) {
+
+        return {
+
+          id:
+            `soon-${task.id}`,
+
+          type:
+            "info",
+
+          title:
+            "Upcoming Task",
+
+          message:
+            `"${task.title}" is due in ${difference} day(s).`
+
+        };
+
+      }
+
+
+      return null;
+
+    })
+
+    .filter(Boolean);
+
+});
+
+</script>
