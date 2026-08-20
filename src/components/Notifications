@@ -1,0 +1,68 @@
+<template>
+
+  <div class="notification-header">
+
+    <div>
+
+      <h2>Notifications</h2>
+
+      <p>Important task reminders</p>
+
+    </div>
+
+
+    <span class="notification-count">
+      {{ notifications.length }}
+    </span>
+
+  </div>
+
+
+  <div
+    v-if="notifications.length === 0"
+    class="no-notifications"
+  >
+
+    <p>
+      🎉 No pending notifications.
+    </p>
+
+  </div>
+
+
+  <div
+    v-for="notification in notifications"
+    :key="notification.id"
+    class="notification-card"
+    :class="notification.type"
+  >
+
+    <div>
+
+      <h3>
+        {{ notification.title }}
+      </h3>
+
+      <p>
+        {{ notification.message }}
+      </p>
+
+    </div>
+
+  </div>
+
+</template>
+
+
+<script setup>
+
+defineProps({
+
+  notifications: {
+    type: Array,
+    default: () => []
+  }
+
+});
+
+</script>
