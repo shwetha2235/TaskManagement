@@ -1,0 +1,253 @@
+<template>
+
+  <div class="kanban-header">
+
+    <div>
+
+      <h2>Kanban Board</h2>
+
+      <p>Track your tasks by status</p>
+
+    </div>
+
+  </div>
+
+
+  <div class="kanban-board">
+
+
+    <!-- TO DO -->
+
+    <div class="kanban-column">
+
+      <div class="kanban-column-header">
+
+        <h3>To Do</h3>
+
+        <span>
+          {{ todoTasks.length }}
+        </span>
+
+      </div>
+
+
+      <div
+        v-for="task in todoTasks"
+        :key="task.id"
+        class="kanban-card"
+      >
+
+        <h4>{{ task.title }}</h4>
+
+        <p>{{ task.description }}</p>
+
+        <small>
+          Assigned to: {{ task.assignedTo }}
+        </small>
+
+        <small>
+          Due: {{ task.dueDate }}
+        </small>
+
+
+        <select
+          :value="task.status"
+          @change="changeStatus(task, $event.target.value)"
+          class="kanban-status"
+        >
+
+          <option value="To Do">
+            To Do
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <!-- IN PROGRESS -->
+
+    <div class="kanban-column">
+
+      <div class="kanban-column-header">
+
+        <h3>In Progress</h3>
+
+        <span>
+          {{ progressTasks.length }}
+        </span>
+
+      </div>
+
+
+      <div
+        v-for="task in progressTasks"
+        :key="task.id"
+        class="kanban-card"
+      >
+
+        <h4>{{ task.title }}</h4>
+
+        <p>{{ task.description }}</p>
+
+        <small>
+          Assigned to: {{ task.assignedTo }}
+        </small>
+
+        <small>
+          Due: {{ task.dueDate }}
+        </small>
+
+
+        <select
+          :value="task.status"
+          @change="changeStatus(task, $event.target.value)"
+          class="kanban-status"
+        >
+
+          <option value="To Do">To Do</option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <!-- COMPLETED -->
+
+    <div class="kanban-column">
+
+      <div class="kanban-column-header">
+
+        <h3>Completed</h3>
+
+        <span>
+          {{ completedTasks.length }}
+        </span>
+
+      </div>
+
+
+      <div
+        v-for="task in completedTasks"
+        :key="task.id"
+        class="kanban-card"
+      >
+
+        <h4>{{ task.title }}</h4>
+
+        <p>{{ task.description }}</p>
+
+        <small>
+          Assigned to: {{ task.assignedTo }}
+        </small>
+
+        <small>
+          Due: {{ task.dueDate }}
+        </small>
+
+
+        <select
+          :value="task.status"
+          @change="changeStatus(task, $event.target.value)"
+          class="kanban-status"
+        >
+
+          <option value="To Do">To Do</option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</template>
+
+
+<script setup>
+
+import { computed } from "vue";
+
+
+const props = defineProps({
+
+  tasks: {
+    type: Array,
+    default: () => []
+  }
+
+});
+
+
+const emit = defineEmits([
+  "status-change"
+]);
+
+
+const todoTasks = computed(() => {
+
+  return props.tasks.filter(
+    task => task.status === "To Do"
+  );
+
+});
+
+
+const progressTasks = computed(() => {
+
+  return props.tasks.filter(
+    task => task.status === "In Progress"
+  );
+
+});
+
+
+const completedTasks = computed(() => {
+
+  return props.tasks.filter(
+    task => task.status === "Completed"
+  );
+
+});
+
+
+function changeStatus(task, status) {
+
+  emit(
+    "status-change",
+    task,
+    status
+  );
+
+}
+
+</script>
