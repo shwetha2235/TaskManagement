@@ -1,0 +1,303 @@
+<template>
+
+  <div class="calendar-header">
+
+    <div>
+
+      <h2>Task Calendar</h2>
+
+      <p>View your tasks by due date</p>
+
+    </div>
+
+  </div>
+
+
+  <div class="calendar">
+
+    <!-- Navigation -->
+
+    <div class="calendar-top">
+
+      <button
+        class="calendar-btn"
+        @click="previousMonth"
+      >
+        ←
+      </button>
+
+
+      <h2>
+        {{ monthName }} {{ currentYear }}
+      </h2>
+
+
+      <button
+        class="calendar-btn"
+        @click="nextMonth"
+      >
+        →
+      </button>
+
+    </div>
+
+
+    <!-- Weekdays -->
+
+    <div class="calendar-weekdays">
+
+      <div>Sun</div>
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+
+    </div>
+
+
+    <!-- Calendar -->
+
+    <div class="calendar-grid">
+
+      <div
+        v-for="day in calendarDays"
+        :key="day.date"
+        class="calendar-day"
+        :class="{
+          'other-month': !day.currentMonth,
+          'today': day.isToday
+        }"
+      >
+
+        <div class="day-number">
+          {{ day.day }}
+        </div>
+
+
+        <div
+          v-for="task in getTasksForDate(day.date)"
+          :key="task.id"
+          class="calendar-task"
+          :class="(task.priority || 'Medium').toLowerCase()"
+        >
+
+          <strong>
+            {{ task.title }}
+          </strong>
+
+          <small>
+            {{ task.status }}
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</template>
+
+
+<script setup>
+
+import { ref, computed } from "vue";
+
+
+const props = defineProps({
+
+  tasks: {
+    type: Array,
+    default: () => []
+  }
+
+});
+
+
+const currentDate = ref(new Date());
+
+
+const monthName = computed(() => {
+
+  return currentDate.value.toLocaleString(
+    "default",
+    {
+      month: "long"
+    }
+  );
+
+});
+
+
+const currentYear = computed(() => {
+
+  return currentDate.value.getFullYear();
+
+});
+
+
+function previousMonth() {
+
+  currentDate.value = new Date(
+    currentDate.value.getFullYear(),
+    currentDate.value.getMonth() - 1,
+    1
+  );
+
+}
+
+
+function nextMonth() {
+
+  currentDate.value = new Date(
+    currentDate.value.getFullYear(),
+    currentDate.value.getMonth() + 1,
+    1
+  );
+
+}
+
+
+const calendarDays = computed(() => {
+
+  const year = currentDate.value.getFullYear();
+
+  const month = currentDate.value.getMonth();
+
+
+  const firstDay = new Date(
+    year,
+    month,
+    1
+  );
+
+
+  const lastDay = new Date(
+    year,
+    month + 1,
+    0
+  );
+
+
+  const days = [];
+
+
+  /* Days from previous month */
+
+  const previousMonthLastDay = new Date(
+    year,
+    month,
+    0
+  ).getDate();
+
+
+  for (
+    let i = firstDay.getDay() - 1;
+    i >= 0;
+    i--
+  ) {
+
+    const date = new Date(
+      year,
+      month - 1,
+      previousMonthLastDay - i
+    );
+
+    days.push(createDay(date, false));
+
+  }
+
+
+  /* Current month */
+
+  for (
+    let day = 1;
+    day <= lastDay.getDate();
+    day++
+  ) {
+
+    const date = new Date(
+      year,
+      month,
+      day
+    );
+
+    days.push(createDay(date, true));
+
+  }
+
+
+  /* Next month */
+
+  let nextDay = 1;
+
+  while (days.length < 42) {
+
+    const date = new Date(
+      year,
+      month + 1,
+      nextDay++
+    );
+
+    days.push(createDay(date, false));
+
+  }
+
+
+  return days;
+
+});
+
+
+function createDay(date, currentMonth) {
+
+  const year = date.getFullYear();
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
+
+
+  const dateString =
+    `${year}-${month}-${day}`;
+
+
+  const today = new Date();
+
+  const isToday =
+    today.getFullYear() === year &&
+    today.getMonth() === date.getMonth() &&
+    today.getDate() === date.getDate();
+
+
+  return {
+
+    date: dateString,
+
+    day: date.getDate(),
+
+    currentMonth,
+
+    isToday
+
+  };
+
+}
+
+
+function getTasksForDate(date) {
+
+  return props.tasks.filter(
+    task => task.dueDate === date
+  );
+
+}
+
+</script>
